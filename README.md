@@ -1,5 +1,5 @@
 # SelfDrivingCarUnity5
-This is a petty project for developing a self driving car using Unity 5
+This is a petty project for developing a self driving car using Unity 5 and Neural Networks
 
 ## Included Assets
 
