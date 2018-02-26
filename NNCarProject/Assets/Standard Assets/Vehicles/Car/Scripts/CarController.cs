@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UnityStandardAssets.Vehicles.Car
 {
@@ -148,6 +149,19 @@ namespace UnityStandardAssets.Vehicles.Car
             m_SteerAngle = steering*m_MaximumSteerAngle;
             m_WheelColliders[0].steerAngle = m_SteerAngle;
             m_WheelColliders[1].steerAngle = m_SteerAngle;
+
+
+			// Shows visual feedback on UI for steering
+			GameObject imageObject = GameObject.FindGameObjectWithTag("SteeringWheelTag");
+
+			if(imageObject != null)
+			{
+				Image wheelImage = imageObject.GetComponent<Image>();
+				wheelImage.transform.rotation = Quaternion.Euler(0,0, -m_SteerAngle);
+				GameObject textObject = GameObject.FindGameObjectWithTag("SteeringWheelText");
+				Text angleText = textObject.GetComponent<Text> ();
+				angleText.text = "Angle: " + -m_SteerAngle;
+			}
 
             SteerHelper();
             ApplyDrive(accel, footbrake);

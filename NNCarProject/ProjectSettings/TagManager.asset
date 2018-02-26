@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - OverviewCamera
+  - SteeringWheelTag
+  - SteeringWheelText
   layers:
   - Default
   - TransparentFX

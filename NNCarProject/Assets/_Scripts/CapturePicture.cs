@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.UI;
 
 public class CapturePicture : MonoBehaviour
 {
@@ -46,6 +47,7 @@ public class CapturePicture : MonoBehaviour
 	private Rect rect;
 	private RenderTexture renderTexture;
 	private Texture2D screenShot;
+	private bool recordTraniningSession = false;
 
 	void Update ()
 	{
@@ -70,78 +72,78 @@ public class CapturePicture : MonoBehaviour
 	void CaptureFeature (float steering, float speed)
 	{
 
-		// check keyboard 'k' for one time screenshot capture and holding down 'v' for continious screenshots
 		//captureScreenshot |= Input.GetKeyDown("k");
 		//captureVideo = Input.GetKey("v");
 
+		if (Input.GetKey ("t")) {
+			recordTraniningSession = !recordTraniningSession;		
 
-		// create screenshot objects if needed
-		if (renderTexture == null) {
-			// creates off-screen render texture that can rendered into
-			rect = new Rect (0, 0, captureWidth, captureHeight);
-			renderTexture = new RenderTexture (captureWidth, captureHeight, 24);
-			screenShot = new Texture2D (captureWidth, captureHeight, TextureFormat.RGB24, false);
+			if (!recordTraniningSession) {
+				var guid = Guid.NewGuid ().ToString ();
+				File.WriteAllText ("NNCar-training-" + guid +".csv", csv.ToString ());
+			}
 		}
 
-		// get main camera and manually render scene into rt
-		cam.targetTexture = renderTexture;
-		cam.Render ();
+		if (recordTraniningSession) {
 
-		// read pixels will read from the currently active render texture so make our offscreen 
-		// render texture active and then read the pixels
-		RenderTexture.active = renderTexture;
-		screenShot.ReadPixels (rect, 0, 0);
+			// create screenshot objects if needed
+			if (renderTexture == null) {
+				// creates off-screen render texture that can rendered into
+				rect = new Rect (0, 0, captureWidth, captureHeight);
+				renderTexture = new RenderTexture (captureWidth, captureHeight, 24);
+				screenShot = new Texture2D (captureWidth, captureHeight, TextureFormat.RGB24, false);
+			}
 
-		// reset active camera texture and render texture
-		//cam.targetTexture = null;
-		RenderTexture.active = null;
+			// get main camera and manually render scene into rt
+			cam.targetTexture = renderTexture;
+			cam.Render ();
 
-		// get our unique filename
-		//string filename = uniqueFilename((int) rect.width, (int) rect.height);
+			// read pixels will read from the currently active render texture so make our offscreen 
+			// render texture active and then read the pixels
+			RenderTexture.active = renderTexture;
+			screenShot.ReadPixels (rect, 0, 0);
 
-		// pull in our file header/data bytes for the specified image format (has to be done from main thread)
-		//byte[] fileHeader = null;
-		byte[] fileData = null;
+			// reset active camera texture and render texture
+			//cam.targetTexture = null;
+			RenderTexture.active = null;
 
-		if (format == Format.RAW) {
-			fileData = screenShot.GetRawTextureData ();
-		} else if (format == Format.PNG) {
-			fileData = screenShot.EncodeToPNG ();
-		} else if (format == Format.JPG) {
-			fileData = screenShot.EncodeToJPG ();
-		}
+			// get our unique filename
+			//string filename = uniqueFilename((int) rect.width, (int) rect.height);
+
+			// pull in our file header/data bytes for the specified image format (has to be done from main thread)
+			//byte[] fileHeader = null;
+			byte[] fileData = null;
+
+			if (format == Format.RAW) {
+				fileData = screenShot.GetRawTextureData ();
+			} else if (format == Format.PNG) {
+				fileData = screenShot.EncodeToPNG ();
+			} else if (format == Format.JPG) {
+				fileData = screenShot.EncodeToJPG ();
+			}
 				
-	    // --------------- Feature Selection -----------------------
-		Texture2D t = new Texture2D (captureWidth,captureHeight);
-		t.LoadImage (fileData);
-		var c = t.GetPixels();
-		var c_size = captureHeight * captureWidth;
+			// --------------- Feature Selection -----------------------
+			Texture2D t = new Texture2D (captureWidth, captureHeight);
+			t.LoadImage (fileData);
+			var c = t.GetPixels ();
+			var c_size = captureHeight * captureWidth;
 
-		// gs is the grayscale array used for the NN features.
-		// position 0 of the array is the label (steering direction)
-		float[] gs = new float[c_size+1];
-		gs [0] = steering; // Label Setup
-		for (int i = 0; i < c_size; i++) {
-			gs [i+1] = c [i].grayscale;
-		}
+			// gs is the grayscale array used for the NN features.
+			// position 0 of the array is the label (steering direction)
+			float[] gs = new float[c_size + 1];
+			gs [0] = steering; // Label Setup
+			for (int i = 0; i < c_size; i++) {
+				gs [i + 1] = c [i].grayscale;
+			}
 
-		// add gs to feature set (training set)
-		csv.AppendLine(string.Join(",", Array.ConvertAll(gs, x => x.ToString())));
+			// add gs to feature set (training set)
+			csv.AppendLine (string.Join (",", Array.ConvertAll (gs, x => x.ToString ())));
 
-		// save after 10 iterations (for now...)
-
-		entries++;
-
-		if (entries == 10) {
-			File.WriteAllText("NNCar.csv", csv.ToString());
-		}
+			// --------------- End --------------------------------------
 
 
-		// --------------- End --------------------------------------
-
-
-		// create new thread to save the image to file (only operation that can be done in background)
-		/*
+			// create new thread to save the image to file (only operation that can be done in background)
+			/*
 				new System.Threading.Thread(() =>
 					{
 						// create file and write optional header with image bytes
@@ -153,12 +155,16 @@ public class CapturePicture : MonoBehaviour
 					}).Start();
 				*/
 
-		// cleanup if needed
-		if (optimizeForManyScreenshots == false) {
-			Destroy (renderTexture);
-			renderTexture = null;
-			screenShot = null;
-		}
+			// cleanup if needed
+			if (optimizeForManyScreenshots == false) {
+				Destroy (renderTexture);
+				renderTexture = null;
+				screenShot = null;
+			}
+
+		
+		} // end of recording training-set features
+
 
 	}
 
