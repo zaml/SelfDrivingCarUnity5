@@ -9,8 +9,6 @@ using UnityEngine.UI;
 public class CapturePicture : MonoBehaviour
 {
 
-	int entries = 0;
-
 	System.Text.StringBuilder csv = new System.Text.StringBuilder();
 
 	// time that a new feature will be captured.
@@ -34,9 +32,8 @@ public class CapturePicture : MonoBehaviour
 		RAW,
 		JPG,
 		PNG,
-		PPM}
-
-	;
+		PPM
+	};
 
 	public Format format = Format.PPM;
 
@@ -48,6 +45,13 @@ public class CapturePicture : MonoBehaviour
 	private RenderTexture renderTexture;
 	private Texture2D screenShot;
 	private bool recordTraniningSession = false;
+	GameObject textObject;
+	Text statusText;
+
+	void Start(){
+		textObject = GameObject.FindGameObjectWithTag("CarTrainingText");
+		statusText = textObject.GetComponent<Text> ();
+	}
 
 	void Update ()
 	{
@@ -58,6 +62,24 @@ public class CapturePicture : MonoBehaviour
 		// work with a single decimal for better movement labeling.
 		h = (float)Math.Round ((double)h, 1);
 
+		// start / stop collecting the training set session...
+		if (Input.GetKeyDown (KeyCode.Z)) {
+			recordTraniningSession = true;
+
+			statusText.text = "Status: Training";
+			statusText.color = Color.cyan;
+		}
+
+		// stop recording and save file
+		if (Input.GetKeyDown (KeyCode.X)) {
+			recordTraniningSession = false;
+
+			var guid = Guid.NewGuid ().ToString ();
+			File.WriteAllText ("TrainingSets/NNCar-training-" + guid +".csv", csv.ToString ());
+
+			statusText.text = "Status: User Driving";
+			statusText.color = Color.white;
+		}
 
 		// execute code every [nextUpdate] amount of seconds
 		if (Time.time >= nextUpdate) {
@@ -71,19 +93,7 @@ public class CapturePicture : MonoBehaviour
 
 	void CaptureFeature (float steering, float speed)
 	{
-
-		//captureScreenshot |= Input.GetKeyDown("k");
-		//captureVideo = Input.GetKey("v");
-
-		if (Input.GetKey ("t")) {
-			recordTraniningSession = !recordTraniningSession;		
-
-			if (!recordTraniningSession) {
-				var guid = Guid.NewGuid ().ToString ();
-				File.WriteAllText ("NNCar-training-" + guid +".csv", csv.ToString ());
-			}
-		}
-
+		
 		if (recordTraniningSession) {
 
 			// create screenshot objects if needed

@@ -3050,7 +3050,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: daf9781cad112c75d0008dfa8d76c639, type: 3}
-  textureRamp: {fileID: 0}
+  textureRamp: {fileID: 2800000, guid: d440902fad11e807d00044888d76c639, type: 3}
   rampOffset: 0
 --- !u!1001 &393246377
 Prefab:
@@ -5902,7 +5902,6 @@ GameObject:
   - component: {fileID: 820620264}
   - component: {fileID: 820620263}
   - component: {fileID: 820620262}
-  - component: {fileID: 820620261}
   m_Layer: 0
   m_Name: Car
   m_TagString: Player
@@ -5910,30 +5909,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &820620261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400024, guid: 0e7ee4df08df88c4880f43398f9ad2c2,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 820620260}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20fa55eb64c5cea4aa3c71ae19c434bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  engineSoundStyle: 1
-  lowAccelClip: {fileID: 8300000, guid: c4d8928c75c21af43998193f0f038429, type: 3}
-  lowDecelClip: {fileID: 8300000, guid: c4d8928c75c21af43998193f0f038429, type: 3}
-  highAccelClip: {fileID: 8300000, guid: 03e3bd08a6e70684dbe299a3e185fdd2, type: 3}
-  highDecelClip: {fileID: 8300000, guid: 03bf91d88fce91c41995d27de63cc967, type: 3}
-  pitchMultiplier: 0.8
-  lowPitchMin: 1
-  lowPitchMax: 5
-  highPitchMultiplier: 0.25
-  maxRolloffDistance: 500
-  dopplerLevel: 1
-  useDoppler: 1
 --- !u!114 &820620262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5982,8 +5957,8 @@ MonoBehaviour:
   m_ReverseTorque: 500
   m_MaxHandbrakeTorque: 100000000
   m_Downforce: 100
-  m_SpeedType: 0
-  m_Topspeed: 150
+  m_SpeedType: 1
+  m_Topspeed: 60
   m_RevRangeBoundary: 1
   m_SlipLimit: 0.3
   m_BrakeTorque: 20000
@@ -10856,7 +10831,7 @@ GameObject:
   - component: {fileID: 1664366158}
   m_Layer: 5
   m_Name: CarTrainingTextMode
-  m_TagString: Untagged
+  m_TagString: CarTrainingText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10911,7 +10886,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Current Status: Learning'
+  m_Text: 'Status: User Driving'
 --- !u!222 &1664366159
 CanvasRenderer:
   m_ObjectHideFlags: 0
